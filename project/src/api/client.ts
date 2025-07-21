@@ -21,10 +21,10 @@ apiClient.interceptors.request.use(
       config.url = `/api/${config.url}`;
     }
     
-    // Check if online
+    / Check if online 
     if (!navigator.onLine) {
       return Promise.reject(new Error('Нет подключения к интернету'));
-    }
+    } /
     
     // Add auth token if available
     const token = localStorage.getItem('auth_token');
