@@ -9,8 +9,9 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'https://api.aliexpress-clone.com/v1',
+        target: 'http://locahost:8000',
         changeOrigin: true,
+        secure: false,
         rewrite: (path) => path.replace(/^\/api/, '')
       }
     }
