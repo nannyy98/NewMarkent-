@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  shop-bot:
+    build: .
+    container_name: telegram-shop-bot
+    restart: unless-stopped
+    environment:
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - ENVIRONMENT=production
+      - DATABASE_PATH=/app/data/shop_bot.db
+      - LOG_LEVEL=INFO
+      - REDIS_ENABLED=true
+      - REDIS_HOST=redis
+      - SENTRY_DSN=${SENTRY_DSN}
+      - FLASK_SECRET_KEY=${FLASK_SECRET_KEY}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./backups:/app/backups
+    ports:
+      - "8080:8080"  # Health check endpoint
+      - "5000:5000"  # Web admin panel
+    depends_on:
+      - redis
+    networks:
+      - shop-bot-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: shop-bot-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    networks:
+      - shop-bot-network
+
+  nginx:
+    image: nginx:alpine
+    container_name: shop-bot-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./ssl:/etc/nginx/ssl
+    depends_on:
+      - shop-bot
+    networks:
+      - shop-bot-network
+
+volumes:
+  redis_data:
+
+networks:
+  shop-bot-network:
+    driver: bridge

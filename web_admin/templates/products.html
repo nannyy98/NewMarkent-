@@ -1,0 +1,72 @@
+
+{% extends 'base.html' %}
+{% block title %}Товары{% endblock %}
+{% block content %}
+<div class="d-flex align-items-center justify-content-between mb-3">
+  <h1 class="h3">Товары</h1>
+  <a class="btn btn-primary" href="{{ url_for('add_product') }}">+ Добавить товар</a>
+</div>
+
+<form class="row gy-2 gx-2 align-items-end mb-3" method="get">
+  <div class="col-md-3">
+    <label class="form-label">Категория</label>
+    <select class="form-select" name="category">
+      <option value="">Все</option>
+      {% for c in categories %}
+        <option value="{{ c[0] }}" {% if category_filter and c[0]|string == category_filter %}selected{% endif %}>{{ c[1] }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-md-4">
+    <label class="form-label">Поиск</label>
+    <input class="form-control" name="search" value="{{ search or '' }}" placeholder="Название или описание...">
+  </div>
+  <div class="col-md-2">
+    <label class="form-label">На страницу</label>
+    <select class="form-select" name="per_page">
+      {% for n in [10,20,30,50] %}
+      <option value="{{n}}" {% if per_page==n %}selected{% endif %}>{{n}}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-md-3">
+    <button class="btn btn-dark w-100" type="submit">Применить</button>
+  </div>
+</form>
+
+<div class="table-responsive">
+<table class="table table-striped align-middle">
+  <thead><tr>
+    <th>ID</th><th>Фото</th><th>Название</th><th>Цена</th>
+    <th>Остаток</th><th>Активен</th><th>Категория</th><th>Продаж</th><th>Просмотров</th>
+  </tr></thead>
+  <tbody>
+  {% for p in products %}
+  <tr>
+    <td>{{ p[0] }}</td>
+    <td>{% if p[8] %}<img src="{{ p[8] }}" alt="img">{% endif %}</td>
+    <td>{{ p[1] }}</td>
+    <td>{{ p[2] }}</td>
+    <td>{{ p[3] }}</td>
+    <td>{{ 'Да' if p[4] else 'Нет' }}</td>
+    <td>{{ p[5] or '-' }}</td>
+    <td>{{ p[6] or 0 }}</td>
+    <td>{{ p[7] or 0 }}</td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+
+<nav aria-label="Pagination">
+  <ul class="pagination">
+    <li class="page-item {% if current_page<=1 %}disabled{% endif %}">
+      <a class="page-link" href="?search={{search}}&category={{category_filter}}&per_page={{per_page}}&page={{ current_page-1 }}">Назад</a>
+    </li>
+    <li class="page-item disabled"><span class="page-link">{{ current_page }} / {{ total_pages }}</span></li>
+    <li class="page-item {% if current_page>=total_pages %}disabled{% endif %}">
+      <a class="page-link" href="?search={{search}}&category={{category_filter}}&per_page={{per_page}}&page={{ current_page+1 }}">Вперёд</a>
+    </li>
+  </ul>
+</nav>
+{% endblock %}

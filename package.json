@@ -1,0 +1,8 @@
+{
+  "name": "node-starter",
+  "private": true,
+  "scripts": {
+    "build": "echo \"No specific build step for this project.\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
