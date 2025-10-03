@@ -30,6 +30,7 @@ class MessageHandler:
         self.bot = bot
         self.db = db
         self.user_states = {}
+        self.registration_data = {}
         self.notification_manager = None
         self.payment_processor = PaymentProcessor()
     
@@ -210,10 +211,8 @@ class MessageHandler:
         if len(text) < 2:
             self.bot.send_message(chat_id, "❌ Имя слишком короткое. Попробуйте еще раз:")
             return
-        
+
         # Сохраняем имя и переходим к телефону
-        if not hasattr(self, 'registration_data'):
-            self.registration_data = {}
         self.registration_data[telegram_id] = {'name': text}
         
         phone_text = "📱 Поделитесь номером телефона или пропустите этот шаг:"
@@ -233,7 +232,7 @@ class MessageHandler:
             phone = None
         elif text == '❌ Отмена':
             del self.user_states[telegram_id]
-            if hasattr(self, 'registration_data') and telegram_id in self.registration_data:
+            if telegram_id in self.registration_data:
                 del self.registration_data[telegram_id]
             self.bot.send_message(chat_id, "❌ Регистрация отменена")
             return
@@ -244,7 +243,9 @@ class MessageHandler:
             if not phone:
                 self.bot.send_message(chat_id, "❌ Неверный формат телефона. Попробуйте еще раз:")
                 return
-        
+
+        if telegram_id not in self.registration_data:
+            self.registration_data[telegram_id] = {}
         self.registration_data[telegram_id]['phone'] = phone
         
         email_text = "📧 Введите email или пропустите:"
@@ -264,7 +265,7 @@ class MessageHandler:
             email = None
         elif text == '❌ Отмена':
             del self.user_states[telegram_id]
-            if hasattr(self, 'registration_data') and telegram_id in self.registration_data:
+            if telegram_id in self.registration_data:
                 del self.registration_data[telegram_id]
             self.bot.send_message(chat_id, "❌ Регистрация отменена")
             return
@@ -273,7 +274,9 @@ class MessageHandler:
                 self.bot.send_message(chat_id, "❌ Неверный формат email. Попробуйте еще раз:")
                 return
             email = text
-        
+
+        if telegram_id not in self.registration_data:
+            self.registration_data[telegram_id] = {}
         self.registration_data[telegram_id]['email'] = email
         
         language_text = "🌍 Выберите язык / Tilni tanlang:"
@@ -325,7 +328,7 @@ class MessageHandler:
         
         # Очищаем состояние
         del self.user_states[telegram_id]
-        if hasattr(self, 'registration_data') and telegram_id in self.registration_data:
+        if telegram_id in self.registration_data:
             del self.registration_data[telegram_id]
     
     def send_registration_prompt(self, chat_id):
