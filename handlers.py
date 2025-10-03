@@ -74,7 +74,7 @@ class MessageHandler:
                 self.handle_user_state(message)
             
             # Обрабатываем кнопки меню
-            elif text == '🛍 Каталог':
+            elif text == '🛍 Каталог' or text == '🛍 Перейти в каталог':
                 self.show_catalog(message)
             elif text == '🔙 К категориям':
                 self.show_catalog(message)
@@ -90,10 +90,6 @@ class MessageHandler:
                 self.start_product_search(message)
             elif text == 'ℹ️ Помощь':
                 self.handle_help_command(message, user_language)
-            elif text == '⭐ Программа лояльности':
-                self.show_loyalty_program(message)
-            elif text == '🎁 Промокоды':
-                self.show_available_promos(message)
             elif text == '🔙 Главная' or text == '🏠 Главная':
                 self.show_main_menu(message)
             elif text == '🌍 Сменить язык':
@@ -124,7 +120,7 @@ class MessageHandler:
             # Обрабатываем управление корзиной
             elif text == '🗑 Очистить корзину':
                 self.clear_user_cart(message)
-            elif text == '➕ Добавить товары':
+            elif text == '➕ Добавить товары' or text == '🛍 Продолжить покупки':
                 self.show_catalog(message)
             
             # Неизвестная команда
@@ -300,7 +296,7 @@ class MessageHandler:
         
         # Завершаем регистрацию
         reg_data = self.registration_data.get(telegram_id, {})
-        
+
         user_id = self.db.add_user(
             telegram_id,
             reg_data.get('name', 'Пользователь'),
@@ -308,14 +304,8 @@ class MessageHandler:
             reg_data.get('email'),
             language
         )
-        
+
         if user_id:
-            # Создаем запись баллов лояльности
-            self.db.execute_query(
-                'INSERT OR IGNORE INTO loyalty_points (user_id) VALUES (?)',
-                (user_id,)
-            )
-            
             # Приветственное сообщение
             welcome_complete = t('registration_complete', language=language)
             self.bot.send_message(chat_id, welcome_complete, create_main_keyboard())
@@ -570,9 +560,6 @@ class MessageHandler:
             WHERE user_id = ? AND status != 'cancelled'
         ''', (user_id,))[0]
         
-        # Получаем баллы лояльности
-        loyalty_data = self.db.get_user_loyalty_points(user_id)
-        
         profile_text = f"👤 <b>Ваш профиль</b>\n\n"
         profile_text += f"📝 Имя: {user[2]}\n"
         
@@ -588,14 +575,11 @@ class MessageHandler:
         profile_text += f"📊 <b>Статистика:</b>\n"
         profile_text += f"📦 Заказов: {order_stats[0]}\n"
         profile_text += f"💰 Потрачено: {format_price(order_stats[1])}\n"
-        
+
         if order_stats[2]:
             profile_text += f"📅 Последний заказ: {format_date(order_stats[2])}\n"
-        
-        profile_text += f"\n⭐ <b>Программа лояльности:</b>\n"
-        profile_text += f"💎 Уровень: {loyalty_data[3]}\n"
-        profile_text += f"🏆 Баллов: {loyalty_data[1]}\n\n"
-        profile_text += f"🌍 Для смены языка: /language"
+
+        profile_text += f"\n🌍 Для смены языка: /language"
         
         # Создаем клавиатуру профиля
         profile_keyboard = {
@@ -756,17 +740,12 @@ class MessageHandler:
             # Очищаем корзину
             self.db.clear_cart(user_id)
             
-            # Начисляем баллы лояльности
-            points_earned = int(total_amount * 0.05)  # 5% от суммы
-            self.db.update_loyalty_points(user_id, points_earned)
-            
             # Уведомляем клиента
             success_text = f"✅ <b>Заказ #{order_id} оформлен!</b>\n\n"
             success_text += f"💰 Сумма: {format_price(total_amount)}\n"
             success_text += f"📍 Адрес: {delivery_address}\n"
-            success_text += f"💳 Оплата: {payment_method}\n"
-            success_text += f"⭐ Начислено баллов: {points_earned}\n\n"
-            
+            success_text += f"💳 Оплата: {payment_method}\n\n"
+
             if payment_method == 'online':
                 success_text += "💳 Ссылка для оплаты будет отправлена отдельно"
             else:
