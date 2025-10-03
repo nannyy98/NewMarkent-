@@ -72,7 +72,37 @@ class Localization:
 🛒 <b>Ваша корзина пуста</b>
 
 Перейдите в каталог, чтобы добавить товары!
-                """
+                """,
+
+                # Каталог
+                'catalog_title': '🛍 <b>Каталог товаров</b>\n\nВыберите категорию:',
+                'catalog_unavailable': '❌ Каталог временно недоступен',
+                'no_products': '❌ Товары не найдены',
+                'cart_title': '🛒 <b>Ваша корзина:</b>',
+                'total': '💳 <b>Итого:',
+                'no_orders': '📋 У вас пока нет заказов',
+                'orders_title': '📋 <b>Ваши заказы:</b>',
+                'profile_title': '👤 <b>Ваш профиль</b>',
+                'name': '📝 Имя:',
+                'phone': '📱 Телефон:',
+                'email': '📧 Email:',
+                'language': '🌍 Язык:',
+                'registration_date': '📅 Регистрация:',
+                'statistics': '📊 <b>Статистика:</b>',
+                'orders_count': '📦 Заказов:',
+                'total_spent': '💰 Потрачено:',
+                'last_order': '📅 Последний заказ:',
+                'change_language': '🌍 Для смены языка: /language',
+                'help': 'ℹ️ <b>Помощь</b>\n\n🛍 <b>Каталог</b> - просмотр товаров\n🛒 <b>Корзина</b> - ваши товары\n📋 <b>Мои заказы</b> - история заказов\n👤 <b>Профиль</b> - ваши данные\n🔍 <b>Поиск</b> - поиск товаров\n\n📧 По вопросам: @support',
+                'error': '❌ Произошла ошибка. Попробуйте еще раз.',
+                'added_to_cart': '✅ Товар добавлен в корзину!',
+                'product_not_found': '❌ Товар не найден',
+                'order_created': '✅ <b>Заказ #{} оформлен!</b>',
+                'order_sum': '💰 Сумма:',
+                'order_address': '📍 Адрес:',
+                'order_payment': '💳 Оплата:',
+                'payment_link': '💳 Ссылка для оплаты будет отправлена отдельно',
+                'contact_confirm': '📞 Мы свяжемся с вами для подтверждения'
             },
             
             'uz': {
@@ -142,7 +172,37 @@ Xaridlaringiz baxtiyor bo'lsin! 🛍
 🛒 <b>Savatingiz bo'sh</b>
 
 Mahsulot qo'shish uchun katalogga o'ting!
-                """
+                """,
+
+                # Каталог
+                'catalog_title': '🛍 <b>Mahsulotlar katalogi</b>\n\nKategoriyani tanlang:',
+                'catalog_unavailable': '❌ Katalog vaqtincha mavjud emas',
+                'no_products': '❌ Mahsulotlar topilmadi',
+                'cart_title': '🛒 <b>Sizning savatingiz:</b>',
+                'total': '💳 <b>Jami:',
+                'no_orders': '📋 Sizda hali buyurtmalar yo\'q',
+                'orders_title': '📋 <b>Sizning buyurtmalaringiz:</b>',
+                'profile_title': '👤 <b>Sizning profilingiz</b>',
+                'name': '📝 Ism:',
+                'phone': '📱 Telefon:',
+                'email': '📧 Email:',
+                'language': '🌍 Til:',
+                'registration_date': '📅 Ro\'yxatdan o\'tish:',
+                'statistics': '📊 <b>Statistika:</b>',
+                'orders_count': '📦 Buyurtmalar:',
+                'total_spent': '💰 Sarflangan:',
+                'last_order': '📅 Oxirgi buyurtma:',
+                'change_language': '🌍 Tilni o\'zgartirish uchun: /language',
+                'help': 'ℹ️ <b>Yordam</b>\n\n🛍 <b>Katalog</b> - mahsulotlarni ko\'rish\n🛒 <b>Savat</b> - sizning mahsulotlaringiz\n📋 <b>Mening buyurtmalarim</b> - buyurtmalar tarixi\n👤 <b>Profil</b> - sizning ma\'lumotlaringiz\n🔍 <b>Qidiruv</b> - mahsulotlarni qidirish\n\n📧 Savollar uchun: @support',
+                'error': '❌ Xatolik yuz berdi. Qayta urinib ko\'ring.',
+                'added_to_cart': '✅ Mahsulot savatga qo\'shildi!',
+                'product_not_found': '❌ Mahsulot topilmadi',
+                'order_created': '✅ <b>Buyurtma #{} qabul qilindi!</b>',
+                'order_sum': '💰 Summa:',
+                'order_address': '📍 Manzil:',
+                'order_payment': '💳 To\'lov:',
+                'payment_link': '💳 To\'lov havolasi alohida yuboriladi',
+                'contact_confirm': '📞 Tasdiqlash uchun siz bilan bog\'lanamiz'
             }
         }
     

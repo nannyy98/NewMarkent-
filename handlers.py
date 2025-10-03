@@ -129,7 +129,14 @@ class MessageHandler:
                 
         except Exception as e:
             logger.error(f"Ошибка обработки сообщения: {e}", exc_info=True)
-            self.bot.send_message(message['chat']['id'], "❌ Произошла ошибка. Попробуйте еще раз.")
+            chat_id = message['chat']['id']
+            telegram_id = message.get('from', {}).get('id')
+            language = 'ru'
+            if telegram_id:
+                user_data = self.db.get_user_by_telegram_id(telegram_id)
+                if user_data:
+                    language = user_data[0][5] or 'ru'
+            self.bot.send_message(chat_id, t('error', language=language))
     
     def handle_start_command(self, message):
         """Обработка команды /start"""
@@ -349,14 +356,17 @@ class MessageHandler:
     def show_catalog(self, message):
         """Показ каталога товаров"""
         chat_id = message['chat']['id']
-        
+        telegram_id = message['from']['id']
+        user_data = self.db.get_user_by_telegram_id(telegram_id)
+        language = user_data[0][5] if user_data else 'ru'
+
         categories = self.db.get_categories()
-        
+
         if categories:
-            catalog_text = "🛍 <b>Каталог товаров</b>\n\nВыберите категорию:"
+            catalog_text = t('catalog_title', language=language)
             self.bot.send_message(chat_id, catalog_text, create_categories_keyboard(categories))
         else:
-            self.bot.send_message(chat_id, "❌ Каталог временно недоступен")
+            self.bot.send_message(chat_id, t('catalog_unavailable', language=language))
     
     def handle_category_selection(self, message):
         """Обработка выбора категории"""
@@ -493,17 +503,18 @@ class MessageHandler:
             return
         
         # Формируем текст корзины
-        cart_text = "🛒 <b>Ваша корзина:</b>\n\n"
+        language = user_data[0][5] or 'ru'
+        cart_text = t('cart_title', language=language) + "\n\n"
         total_amount = 0
-        
+
         for item in cart_items:
             item_total = item[2] * item[3]  # price * quantity
             total_amount += item_total
-            
+
             cart_text += f"🛍 <b>{item[1]}</b>\n"
             cart_text += f"💰 {format_price(item[2])} × {item[3]} = {format_price(item_total)}\n\n"
-        
-        cart_text += f"💳 <b>Итого: {format_price(total_amount)}</b>"
+
+        cart_text += t('total', language=language) + f" {format_price(total_amount)}</b>"
         
         self.bot.send_message(chat_id, cart_text, create_cart_keyboard(True))
     
@@ -516,14 +527,15 @@ class MessageHandler:
         if not user_data:
             return
         
+        language = user_data[0][5] or 'ru'
         user_id = user_data[0][0]
         orders = self.db.get_user_orders(user_id)
-        
+
         if not orders:
-            self.bot.send_message(chat_id, "📋 У вас пока нет заказов")
+            self.bot.send_message(chat_id, t('no_orders', language=language))
             return
-        
-        orders_text = "📋 <b>Ваши заказы:</b>\n\n"
+
+        orders_text = t('orders_title', language=language) + "\n\n"
         
         for order in orders[:10]:  # Показываем последние 10
             status_emoji = get_order_status_emoji(order[3])
@@ -560,26 +572,27 @@ class MessageHandler:
             WHERE user_id = ? AND status != 'cancelled'
         ''', (user_id,))[0]
         
-        profile_text = f"👤 <b>Ваш профиль</b>\n\n"
-        profile_text += f"📝 Имя: {user[2]}\n"
+        language = user[5] or 'ru'
+        profile_text = t('profile_title', language=language) + "\n\n"
+        profile_text += t('name', language=language) + f" {user[2]}\n"
         
         if user[3]:
-            profile_text += f"📱 Телефон: {user[3]}\n"
+            profile_text += t('phone', language=language) + f" {user[3]}\n"
         if user[4]:
-            profile_text += f"📧 Email: {user[4]}\n"
-        
+            profile_text += t('email', language=language) + f" {user[4]}\n"
+
         lang = "🇷🇺 Русский" if user[5] == "ru" else "🇺🇿 O'zbekcha"
-        profile_text += f"🌍 Язык: {lang}\n"
-        profile_text += f"📅 Регистрация: {format_date(user[7])}\n\n"
-        
-        profile_text += f"📊 <b>Статистика:</b>\n"
-        profile_text += f"📦 Заказов: {order_stats[0]}\n"
-        profile_text += f"💰 Потрачено: {format_price(order_stats[1])}\n"
+        profile_text += t('language', language=language) + f" {lang}\n"
+        profile_text += t('registration_date', language=language) + f" {format_date(user[7])}\n\n"
+
+        profile_text += t('statistics', language=language) + "\n"
+        profile_text += t('orders_count', language=language) + f" {order_stats[0]}\n"
+        profile_text += t('total_spent', language=language) + f" {format_price(order_stats[1])}\n"
 
         if order_stats[2]:
-            profile_text += f"📅 Последний заказ: {format_date(order_stats[2])}\n"
+            profile_text += t('last_order', language=language) + f" {format_date(order_stats[2])}\n"
 
-        profile_text += f"\n🌍 Для смены языка: /language"
+        profile_text += "\n" + t('change_language', language=language)
         
         # Создаем клавиатуру профиля
         profile_keyboard = {
@@ -741,15 +754,16 @@ class MessageHandler:
             self.db.clear_cart(user_id)
             
             # Уведомляем клиента
-            success_text = f"✅ <b>Заказ #{order_id} оформлен!</b>\n\n"
-            success_text += f"💰 Сумма: {format_price(total_amount)}\n"
-            success_text += f"📍 Адрес: {delivery_address}\n"
-            success_text += f"💳 Оплата: {payment_method}\n\n"
+            language = user_data[0][5] or 'ru'
+            success_text = t('order_created', language=language).format(order_id) + "\n\n"
+            success_text += t('order_sum', language=language) + f" {format_price(total_amount)}\n"
+            success_text += t('order_address', language=language) + f" {delivery_address}\n"
+            success_text += t('order_payment', language=language) + f" {payment_method}\n\n"
 
             if payment_method == 'online':
-                success_text += "💳 Ссылка для оплаты будет отправлена отдельно"
+                success_text += t('payment_link', language=language)
             else:
-                success_text += "📞 Мы свяжемся с вами для подтверждения"
+                success_text += t('contact_confirm', language=language)
             
             self.bot.send_message(chat_id, success_text, create_main_keyboard())
             
