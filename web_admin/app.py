@@ -32,8 +32,15 @@ MAX_FILE_SIZE = 16 * 1024 * 1024  # 16MB
 app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(__file__), UPLOAD_FOLDER)
 app.config['MAX_CONTENT_LENGTH'] = MAX_FILE_SIZE
 
-# Создаем папку для загрузок
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+# Создаем папку для загрузок с проверкой прав
+try:
+    upload_path = os.path.join(os.path.dirname(__file__), UPLOAD_FOLDER)
+    os.makedirs(upload_path, exist_ok=True)
+    # Проверяем права на запись
+    if not os.access(upload_path, os.W_OK):
+        logging.warning(f"Нет прав на запись в директорию: {upload_path}")
+except Exception as e:
+    logging.error(f"Ошибка создания директории для загрузок: {e}")
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS

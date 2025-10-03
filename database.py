@@ -9,22 +9,8 @@ class DatabaseManager:
     def __init__(self, db_path='shop_bot.db'):
         self.db_path = db_path
         self.init_database()
-    
-    def init_database(self):
-        # Обновление схемы: роль пользователя
-        try:
-            conn_alter = sqlite3.connect(self.db_path)
-            cur_alter = conn_alter.cursor()
-            cur_alter.execute("ALTER TABLE users ADD COLUMN role TEXT")
-            conn_alter.commit()
-        except Exception:
-            pass
-        finally:
-            try:
-                conn_alter.close()
-            except Exception:
-                pass
 
+    def init_database(self):
         """Инициализация базы данных"""
         try:
             conn = sqlite3.connect(self.db_path)
@@ -61,7 +47,8 @@ CREATE TABLE IF NOT EXISTS users (
     language TEXT DEFAULT 'ru',
     is_admin INTEGER DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    acquisition_channel TEXT
+    acquisition_channel TEXT,
+    role TEXT
 )
         ''')
         

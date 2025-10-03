@@ -11,6 +11,7 @@ import time
 import signal
 import sys
 import threading
+from datetime import datetime
 from database import DatabaseManager
 from handlers import MessageHandler
 from notifications import NotificationManager
@@ -681,25 +682,16 @@ class TelegramShopBot:
 
 def main():
     """Главная функция"""
-    # Получение токена
-    # Способ 1: Через переменную окружения (рекомендуется)
+    # Получение токена только из переменной окружения
     token = os.getenv('TELEGRAM_BOT_TOKEN')
-    
-    # Способ 2: Fallback токен
+
     if not token:
-        token = "8292684103:AAH0TKL-lCOaKVeppjtAdmsx0gdeMrGtjdQ"
-    
-    if not token or token == 'YOUR_BOT_TOKEN':
         logging.info("❌ ОШИБКА: Не указан токен бота!")
         logging.info("\n📋 Инструкция по настройке:")
         logging.info("1. Создайте бота через @BotFather в Telegram")
         logging.info("2. Получите токен бота")
-        logging.info("3. Выберите один из способов:")
-        logging.info("   СПОСОБ 1 (рекомендуется):")
-        logging.info("   export TELEGRAM_BOT_TOKEN='1234567890:ABCdefGHIjklMNOpqrsTUVwxyz'")
-        logging.info("   ")
-        logging.info("   СПОСОБ 2 (для тестирования):")
-        logging.info("   Раскомментируйте строку в main.py и вставьте токен")
+        logging.info("3. Установите переменную окружения:")
+        logging.info("   export TELEGRAM_BOT_TOKEN='your_bot_token_here'")
         logging.info("\n🔗 Подробная инструкция в README.md")
         return
     
