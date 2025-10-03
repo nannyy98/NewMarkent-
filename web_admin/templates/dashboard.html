@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Главная - Админ-панель{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Панель управления</h1>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="card text-white bg-primary">
+            <div class="card-body">
+                <h5 class="card-title">Заказов сегодня</h5>
+                <h2 class="card-text">{{ today_orders }}</h2>
+                <p class="mb-0">${{ "%.2f"|format(today_revenue) }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-success">
+            <div class="card-body">
+                <h5 class="card-title">Всего заказов</h5>
+                <h2 class="card-text">{{ total_orders }}</h2>
+                <p class="mb-0">${{ "%.2f"|format(total_revenue) }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-info">
+            <div class="card-body">
+                <h5 class="card-title">Клиентов</h5>
+                <h2 class="card-text">{{ total_customers }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-warning">
+            <div class="card-body">
+                <h5 class="card-title">Товаров</h5>
+                <h2 class="card-text">{{ products_count }}</h2>
+                <p class="mb-0">Категорий: {{ categories_count }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Последние заказы</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Клиент</th>
+                            <th>Сумма</th>
+                            <th>Статус</th>
+                            <th>Дата</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in recent_orders %}
+                        <tr>
+                            <td>#{{ order[0] }}</td>
+                            <td>{{ order[1] or 'Неизвестно' }}</td>
+                            <td>${{ "%.2f"|format(order[2]) }}</td>
+                            <td>
+                                <span class="badge bg-{{ 'success' if order[3] == 'completed' else 'warning' }}">
+                                    {{ order[3] }}
+                                </span>
+                            </td>
+                            <td>{{ order[4] }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

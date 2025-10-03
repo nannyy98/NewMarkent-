@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Товары - Админ-панель{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Товары</h1>
+
+<div class="card">
+    <div class="card-body">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Название</th>
+                    <th>Цена</th>
+                    <th>Остаток</th>
+                    <th>Категория</th>
+                    <th>Статус</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                <tr>
+                    <td>{{ product[0] }}</td>
+                    <td>{{ product[1] }}</td>
+                    <td>${{ "%.2f"|format(product[2]) }}</td>
+                    <td>
+                        <span class="badge bg-{{ 'danger' if product[3] < 5 else 'success' }}">
+                            {{ product[3] }}
+                        </span>
+                    </td>
+                    <td>{{ product[4] or 'Без категории' }}</td>
+                    <td>
+                        <span class="badge bg-{{ 'success' if product[5] == 1 else 'secondary' }}">
+                            {{ 'Активен' if product[5] == 1 else 'Неактивен' }}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
